@@ -115,25 +115,27 @@ class AnnotateView(APIView):
 
             try:        
                 hpo_obs = gaussian.find_all("a", {"class": "kwd-search"})
+                hpo_terms= []
                 if hpo_obs:
-                    hpo_terms = ""
                     for ob in hpo_obs:
-                        hpo_terms += str(ob.text) + "\n"
-           
-                data = {'content' : hpo_terms}
+                        hpo_terms.append(str(ob.text).strip())
 
-                sci_graph_response = requests.get(server_url + '/annotations/entities', params = data)
+                response['Annotated HPO Terms'] = []
+                for term in hpo_terms:          
+                    data = {'content' : str(term)}
 
-                if sci_graph_response.status_code == 200:
-                    annotated_data = sci_graph_response.json()
-                    response['Annotated HPO Terms'] = str(annotated_data)
+                    sci_graph_response = requests.get(server_url + '/annotations/entities', params = data)
 
-                else:
-                    response['Annotated HPO Terms'] = ""
+                    if sci_graph_response.status_code == 200:
+                        annotated_data = sci_graph_response.json()
+                        response['Annotated HPO Terms'].append(str(annotated_data)) 
+
+                    else:
+                        response['Annotated HPO Terms'].append("")
 
 
             except:
-                response['Annotated HPO Terms'] = ""
+                response['Annotated HPO Terms'] = []
 
             return Response(response)  
         else:
