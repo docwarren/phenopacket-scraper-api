@@ -21,7 +21,7 @@ Install all the required packages:
 
 	$ venv/bin/pip install -r requirements.txt
 
-Create your database and the superuser by running this from the root directory of phenopacketscraper:
+Create your database and the superuser by running this from the `phenopacketscraper/` directory of the repository:
 
 	$ python manage.py migrate
 	$ python manage.py createsuperuser
@@ -49,8 +49,8 @@ To annotate data from a url you can enter the following in your browser:
 
 Or by using curl in your terminal. For annotation you can enter the following
 
-	$ curl -H 'Accept: application/json; indent=4' [url]
+	$ curl -H 'Accept: application/json; indent=4' http://localhost:8000/api/annotate/?url=[url]
 
-For instance you can use `http://molecularcasestudies.cshlp.org/content/2/2/a000703.abstract` in place for [url] for testing.
+For instance you can use `http://molecularcasestudies.cshlp.org/content/2/2/a000703.abstract` in place of [url] for testing.
 
 
