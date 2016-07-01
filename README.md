@@ -36,7 +36,7 @@ For Example:
 
 Install all the required packages:
 
-	$ venv/bin/pip install -r requirements.txt
+	$ venv/bin/pip3 install -r requirements.txt
 
 Create your database and the superuser by running this from the `phenopacketscraper/` directory of the repository:
 
@@ -64,7 +64,7 @@ To annotate data from a url you can enter the following in your browser:
 
 To generate phenopacket of a given webpage you can enter the following in your browser:
 
-	http://localhost:8000/api/annotate/?url=[url]
+	http://localhost:8000/api/phenopacket/?url=[url]
 
 
 Or by using curl in your terminal. For annotation you can enter the following
