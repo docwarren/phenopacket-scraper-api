@@ -22,6 +22,7 @@ Clone the phenopacket-python respository:
 	$ git clone https://github.com/phenopackets/phenopacket-python.git
 
 Install it in your virtual environment:
+
 	$ cd phenopacket-python
 	$ ../venv/bin/python setup.py install
 
