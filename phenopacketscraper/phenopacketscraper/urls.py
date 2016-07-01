@@ -30,4 +30,5 @@ urlpatterns += [
     url(r'^api/test/', views.TestView.as_view()),
     url(r'^api/scrape/', views.ScrapeView.as_view()),
     url(r'^api/annotate/', views.AnnotateView.as_view()),
+    url(r'^api/phenopacket/', views.PhenoPacketView.as_view()),
 ]
