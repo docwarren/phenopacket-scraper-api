@@ -1,3 +1,5 @@
+# encoding=utf8
+
 from rest_framework import viewsets
 from main.serializers import UserSerializer
 from rest_framework.views import APIView
@@ -5,6 +7,10 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions
 import requests
 from bs4 import BeautifulSoup
+from phenopacket.PhenoPacket import *
+from phenopacket.models.Meta import *
+import json
+
 
 
 class TestView(APIView):
@@ -13,6 +19,10 @@ class TestView(APIView):
         arg1 = request.GET.get('arg1', None)
         return Response({"test data" : "test", 'arg1' :arg1})
 
+
+
+
+server_url = 'https://scigraph-ontology-dev.monarchinitiative.org/scigraph'
 
 
 class ScrapeView(APIView):
@@ -64,7 +74,6 @@ class ScrapeView(APIView):
 
 
 
-server_url = 'https://scigraph-ontology-dev.monarchinitiative.org/scigraph'
 
 
 class AnnotateView(APIView):
@@ -141,4 +150,115 @@ class AnnotateView(APIView):
         else:
             return Response({"Response" : "URL Not Found"})
 
+
+
+
+class PhenoPacketView(APIView):
+
+    def get(self, request, *args, **kw):
+        url = request.GET.get('url', None)
+
+
+        if url:
+
+            try:
+                req_ob = requests.get(str(url).strip())
+            except:
+                return Response({"Response" : "Invalid URL"})
+            
+            gaussian = BeautifulSoup(req_ob.content, "html.parser")
+
+            try:
+                title = gaussian.find_all("title")[0]
+                title = str(title.text.decode('utf-8'))
+
+            except:
+                title= ""
+            
+
+            try:     
+
+                hpo_obs = gaussian.find_all("a", {"class": "kwd-search"})
+
+                if hpo_obs:
+                    hpo_terms=[]
+
+                    for ob in hpo_obs:
+                        hpo_terms.append(str(ob.text).strip())
+
+                    phenotype_data = []
+                    for term in hpo_terms:
+                        data={'content' : str(term)}
+                        response = requests.get(server_url+ '/annotations/entities', params = data)
+                        if response.status_code == 200:
+                            annotated_data = response.json()
+                            for ob in annotated_data:
+                                token = ob['token']
+                                token_term = str(token['terms'][0])
+                                if str(token_term).lower() == str(term).lower():
+                                    term_id = token['id']
+                                    phenotype_data.append((term_id, term))
+                        else:
+                            self.app.stdout.write(str(response.status_code))
+
+
+                    journal = Entity(
+                                    id = str(url),
+                                    type = EntityType.paper)
+
+                    phenopacket_entities = [journal]
+
+
+                    environment = Environment()
+                    severity = ConditionSeverity()
+                    onset = TemporalRegion()
+                    offset = TemporalRegion()
+
+                    evidence_type = OntologyClass(
+                                                class_id="ECO:0000501",
+                                                label="Evidence used in automatic assertion")
+
+                    evidence = Evidence(types= [evidence_type])
+                    
+                    phenotype_profile = []
+                    
+                    for element in phenotype_data:
+                        types_ob = OntologyClass(
+                                                class_id= element[0],
+                                                label= element[1])
+                        types=[types_ob]
+
+                        phenotype  =    Phenotype(
+                                            types= types,
+                                            environment=environment,
+                                            severity=severity,
+                                            onset=onset,
+                                            offset=offset)
+
+                        phenotype_association   = PhenotypeAssociation(
+                                                    entity = journal.id,
+                                                    evidence_list = [evidence],                                                    
+                                                    phenotype = phenotype)
+
+                        phenotype_profile.append(phenotype_association)
+
+
+                    phenopacket = PhenoPacket(
+                                        packet_id = "gauss-packet",
+                                        title = title,
+                                        entities = phenopacket_entities,
+                                        phenotype_profile = phenotype_profile)
+
+                    return Response({"Response" : str(phenopacket) })   
+               
+                else:
+                    return Response({"Response" : "HPO Terms Not found"})
+
+
+            except:
+                return Response({"Response" : "HPO Terms Not found"})
+        else:
+            return Response({"Response" : "URL Not Found"})
+
+      
 
