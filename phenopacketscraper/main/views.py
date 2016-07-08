@@ -179,7 +179,7 @@ class PhenoPacketView(APIView):
                 title= ""
             
 
-            try:     
+            try: 
 
                 hpo_obs = gaussian.find_all("a", {"class": "kwd-search"})
 
@@ -197,7 +197,10 @@ class PhenoPacketView(APIView):
                             annotated_data = response.json()
                             for ob in annotated_data:
                                 token = ob['token']
-                                token_term = str(token['terms'][0])
+                                try:
+                                    token_term = str(token['terms'][0])
+                                except:
+                                    continue
                                 if str(token_term).lower() == str(term).lower():
                                     term_id = token['id']
                                     phenotype_data.append((term_id, term))
@@ -257,11 +260,11 @@ class PhenoPacketView(APIView):
                     return Response({"phenopacket" : str(phenopacket), "response" : 'OK' })   
                
                 else:
-                    return Response({"response" : "HPO Terms Not foundXXX"})
+                    return Response({"response" : "HPO Terms Not found"})
 
 
             except:
-                return Response({"response" : "HPO Terms Not foundYYY"})
+                return Response({"response" : "HPO Terms Not found"})
         else:
             return Response({"response" : "URL Not Found"})
 
