@@ -15,8 +15,8 @@ import json
 class TestView(APIView):
 
     def get(self, request, *args, **kw):
-        arg1 = request.GET.get('arg1', None)
-        return Response({"test data" : "OK", 'arg1' :arg1})
+        arg = request.GET.get('arg', None)
+        return Response({"test response" : "Test View", 'arg' :arg})
 
 
 
@@ -36,7 +36,7 @@ class ScrapeView(APIView):
             try:
                 req_ob = requests.get(str(url).strip())
             except:
-                return Response({"Response" : "Invalid URL"})
+                return Response({"response" : "Invalid URL"})
             
             gaussian = BeautifulSoup(req_ob.content, "html.parser")
             
@@ -65,11 +65,13 @@ class ScrapeView(APIView):
                     response['HPO Terms'].append(str(ob.text))
                     # self.app.stdout.write('\n')
             else:
-                response['HPO Terms'] = "Not Found"       
+                response['HPO Terms'] = "Not Found"
+
+            response['response'] = 'OK'     
 
             return Response(response)  
         else:
-            return Response({"Response" : "Url Not Found"})
+            return Response({"response" : "Url Not Found"})
 
 
 
