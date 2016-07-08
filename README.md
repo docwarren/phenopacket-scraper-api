@@ -47,7 +47,7 @@ Create your database and the superuser by running this from the `phenopacketscra
 
 ##Usage
 
-To run the server enter the following in the root directory of phenopacketscraper
+To run the server enter the following in the 'phenopacketscraper/' directory of the repository
 
 	$ python manage.py runserver
 
@@ -78,3 +78,6 @@ To generate phenopackets you can enter the following in your terminal:
 
 	$ curl -H 'Accept: application/json; indent=4' http://localhost:8000/api/phenopacket/?url=[url]
 
+To run the test cases, enter the following in the 'phenopacketscraper/' directory of the repository
+
+	$ python manage.py test
