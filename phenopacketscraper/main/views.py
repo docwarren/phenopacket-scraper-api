@@ -1,7 +1,6 @@
 # encoding=utf8
 
 from rest_framework import viewsets
-from main.serializers import UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
@@ -17,7 +16,7 @@ class TestView(APIView):
 
     def get(self, request, *args, **kw):
         arg1 = request.GET.get('arg1', None)
-        return Response({"test data" : "test", 'arg1' :arg1})
+        return Response({"test data" : "OK", 'arg1' :arg1})
 
 
 
