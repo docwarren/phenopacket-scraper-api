@@ -87,7 +87,7 @@ class AnnotateView(APIView):
             try:
                 req_ob = requests.get(str(url).strip())
             except:
-                return Response({"Response" : "Invalid URL"})
+                return Response({"response" : "Invalid URL"})
             
             response = {}
             gaussian = BeautifulSoup(req_ob.content, "html.parser")
@@ -147,9 +147,11 @@ class AnnotateView(APIView):
             except:
                 response['Annotated HPO Terms'] = []
 
+            response['response'] = 'OK'
+
             return Response(response)  
         else:
-            return Response({"Response" : "URL Not Found"})
+            return Response({"response" : "URL Not Found"})
 
 
 
@@ -165,7 +167,7 @@ class PhenoPacketView(APIView):
             try:
                 req_ob = requests.get(str(url).strip())
             except:
-                return Response({"Response" : "Invalid URL"})
+                return Response({"response" : "Invalid URL"})
             
             gaussian = BeautifulSoup(req_ob.content, "html.parser")
 
@@ -250,16 +252,18 @@ class PhenoPacketView(APIView):
                                         entities = phenopacket_entities,
                                         phenotype_profile = phenotype_profile)
 
-                    return Response({"Response" : str(phenopacket) })   
+
+
+                    return Response({"phenopacket" : str(phenopacket), "response" : 'OK' })   
                
                 else:
-                    return Response({"Response" : "HPO Terms Not found"})
+                    return Response({"response" : "HPO Terms Not foundXXX"})
 
 
             except:
-                return Response({"Response" : "HPO Terms Not found"})
+                return Response({"response" : "HPO Terms Not foundYYY"})
         else:
-            return Response({"Response" : "URL Not Found"})
+            return Response({"response" : "URL Not Found"})
 
       
 
