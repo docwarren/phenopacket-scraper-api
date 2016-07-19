@@ -1,7 +1,6 @@
 # encoding=utf8
 
 from rest_framework import viewsets
-from main.serializers import UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import authentication, permissions
@@ -16,8 +15,8 @@ import json
 class TestView(APIView):
 
     def get(self, request, *args, **kw):
-        arg1 = request.GET.get('arg1', None)
-        return Response({"test data" : "test", 'arg1' :arg1})
+        arg = request.GET.get('arg', None)
+        return Response({"test response" : "Test View", 'arg' :arg})
 
 
 
@@ -37,7 +36,7 @@ class ScrapeView(APIView):
             try:
                 req_ob = requests.get(str(url).strip())
             except:
-                return Response({"Response" : "Invalid URL"})
+                return Response({"response" : "Invalid URL"})
             
             gaussian = BeautifulSoup(req_ob.content, "html.parser")
             
@@ -66,11 +65,13 @@ class ScrapeView(APIView):
                     response['HPO Terms'].append(str(ob.text))
                     # self.app.stdout.write('\n')
             else:
-                response['HPO Terms'] = "Not Found"       
+                response['HPO Terms'] = "Not Found"
+
+            response['response'] = 'OK'     
 
             return Response(response)  
         else:
-            return Response({"Response" : "Url Not Found"})
+            return Response({"response" : "Url Not Found"})
 
 
 
@@ -86,7 +87,7 @@ class AnnotateView(APIView):
             try:
                 req_ob = requests.get(str(url).strip())
             except:
-                return Response({"Response" : "Invalid URL"})
+                return Response({"response" : "Invalid URL"})
             
             response = {}
             gaussian = BeautifulSoup(req_ob.content, "html.parser")
@@ -146,9 +147,11 @@ class AnnotateView(APIView):
             except:
                 response['Annotated HPO Terms'] = []
 
+            response['response'] = 'OK'
+
             return Response(response)  
         else:
-            return Response({"Response" : "URL Not Found"})
+            return Response({"response" : "URL Not Found"})
 
 
 
@@ -164,7 +167,7 @@ class PhenoPacketView(APIView):
             try:
                 req_ob = requests.get(str(url).strip())
             except:
-                return Response({"Response" : "Invalid URL"})
+                return Response({"response" : "Invalid URL"})
             
             gaussian = BeautifulSoup(req_ob.content, "html.parser")
 
@@ -176,7 +179,7 @@ class PhenoPacketView(APIView):
                 title= ""
             
 
-            try:     
+            try: 
 
                 hpo_obs = gaussian.find_all("a", {"class": "kwd-search"})
 
@@ -194,7 +197,10 @@ class PhenoPacketView(APIView):
                             annotated_data = response.json()
                             for ob in annotated_data:
                                 token = ob['token']
-                                token_term = str(token['terms'][0])
+                                try:
+                                    token_term = str(token['terms'][0])
+                                except:
+                                    continue
                                 if str(token_term).lower() == str(term).lower():
                                     term_id = token['id']
                                     phenotype_data.append((term_id, term))
@@ -249,16 +255,18 @@ class PhenoPacketView(APIView):
                                         entities = phenopacket_entities,
                                         phenotype_profile = phenotype_profile)
 
-                    return Response({"Response" : str(phenopacket) })   
+
+
+                    return Response({"phenopacket" : str(phenopacket), "response" : 'OK' })   
                
                 else:
-                    return Response({"Response" : "HPO Terms Not found"})
+                    return Response({"response" : "HPO Terms Not found"})
 
 
             except:
-                return Response({"Response" : "HPO Terms Not found"})
+                return Response({"response" : "HPO Terms Not found"})
         else:
-            return Response({"Response" : "URL Not Found"})
+            return Response({"response" : "URL Not Found"})
 
       
 
