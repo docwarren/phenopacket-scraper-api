@@ -7,7 +7,14 @@ from rest_framework.test import APITestCase
 test_urls = [ 
 			'http://molecularcasestudies.cshlp.org/content/early/2016/02/09/mcs.a000786.abstract',
 		 	'http://molecularcasestudies.cshlp.org/content/2/2/a000703.abstract',
-		 	'http://molecularcasestudies.cshlp.org/content/2/2/a000620.abstract'
+		 	'http://molecularcasestudies.cshlp.org/content/2/2/a000620.abstract',
+		 	'http://molecularcasestudies.cshlp.org/content/2/2/a000729.abstract',
+		 	'http://molecularcasestudies.cshlp.org/content/2/3/a000844.abstract',
+		 	'http://molecularcasestudies.cshlp.org/content/2/3/a000786.abstract',
+		 	'http://molecularcasestudies.cshlp.org/content/2/3/a000752.abstract',
+		 	'http://molecularcasestudies.cshlp.org/content/2/1/a000687.abstract',
+		 	'http://molecularcasestudies.cshlp.org/content/2/1/a000547.abstract',
+		 	'http://molecularcasestudies.cshlp.org/content/2/1/a000554.abstract',
 		 	]
 
 
