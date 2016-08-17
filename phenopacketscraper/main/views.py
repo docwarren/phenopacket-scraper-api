@@ -21,7 +21,7 @@ class TestView(APIView):
 
 
 
-server_url = 'https://scigraph-ontology-dev.monarchinitiative.org/scigraph'
+server_url = 'https://scigraph-ontology.monarchinitiative.org/scigraph'
 
 
 class ScrapeView(APIView):
@@ -72,7 +72,6 @@ class ScrapeView(APIView):
             return Response(response)  
         else:
             return Response({"response" : "Url Not Found"})
-
 
 
 
