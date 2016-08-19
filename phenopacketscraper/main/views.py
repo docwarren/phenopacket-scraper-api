@@ -13,6 +13,10 @@ import json
 
 
 class TestView(APIView):
+    """
+    A simple test view to check
+    whether the API is working.
+    """
 
     def get(self, request, *args, **kw):
         arg = request.GET.get('arg', None)
@@ -25,6 +29,11 @@ server_url = 'https://scigraph-ontology.monarchinitiative.org/scigraph'
 
 
 class ScrapeView(APIView):
+    """
+    Takes a URL, scrapes the abstract  
+    and HPO Terms using BeautifulSoup and
+    produces them as output.
+    """
 
     def get(self, request, *args, **kw):
         url = request.GET.get('url', None)
@@ -77,6 +86,12 @@ class ScrapeView(APIView):
 
 
 class AnnotateView(APIView):
+    """
+    Takes a url, scrapes the abstract
+    and HPO Terms and annotates them
+    using scigraph annotator.
+    """
+
 
     def get(self, request, *args, **kw):
         url = request.GET.get('url', None)
@@ -156,6 +171,15 @@ class AnnotateView(APIView):
 
 
 class PhenoPacketView(APIView):
+    """
+    Takes a url, scrapes the HPO Terms,
+    annotates them using scigraph-annotator
+    to extract HPO Term ids.
+
+    Creates a phenopacket using phenopacket-
+    python. 
+
+    """
 
     def get(self, request, *args, **kw):
         url = request.GET.get('url', None)
