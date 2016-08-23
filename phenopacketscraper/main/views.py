@@ -59,7 +59,7 @@ class ScrapeView(APIView):
             
             try:        
                 abstract = soup.find_all("p", {"id" : "p-2"})[0]
-                abs_text = trimlines(abstract.text).encode('ascii','ignore')
+                abs_text = trimlines(abstract.text)
                 response['Abstract'] = str(abs_text) 
 
             except:
