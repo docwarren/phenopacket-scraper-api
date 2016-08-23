@@ -1,15 +1,12 @@
 # encoding=utf8
 
-from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import authentication, permissions
 import requests
 from bs4 import BeautifulSoup
 from phenopacket.PhenoPacket import *
 from phenopacket.models.Meta import *
 import json
-
 
 
 class TestView(APIView):
@@ -26,6 +23,11 @@ class TestView(APIView):
 
 
 server_url = 'https://scigraph-ontology.monarchinitiative.org/scigraph'
+
+def trimlines(s):
+    lines = [line.strip() for line in s.splitlines()]
+    result = '\n'.join(lines)
+    return result
 
 
 class ScrapeView(APIView):
@@ -47,24 +49,24 @@ class ScrapeView(APIView):
             except:
                 return Response({"response" : "Invalid URL"})
             
-            gaussian = BeautifulSoup(req_ob.content, "html.parser")
+            soup = BeautifulSoup(req_ob.content, "html.parser")
             
             try:
-                title = gaussian.find_all("title")[0]
-                response['Title'] = str(title.text)         
+                title = soup.find_all("title")[0]
+                response['Title'] = str(trimlines(title.text))         
             except:
                 response['Title'] = ""
             
             try:        
-                abstract = gaussian.find_all("p", {"id" : "p-2"})[0]
-                abs_text = abstract.text.encode('ascii','ignore')
+                abstract = soup.find_all("p", {"id" : "p-2"})[0]
+                abs_text = trimlines(abstract.text)
                 response['Abstract'] = str(abs_text) 
 
             except:
                 response['Abstract'] = "Not Found"
 
 
-            hpo_obs = gaussian.find_all("a", {"class": "kwd-search"})
+            hpo_obs = soup.find_all("a", {"class": "kwd-search"})
 
             if hpo_obs:
                 # self.app.stdout.write(str(hpo_obs)+'\n\n')
@@ -104,12 +106,12 @@ class AnnotateView(APIView):
                 return Response({"response" : "Invalid URL"})
             
             response = {}
-            gaussian = BeautifulSoup(req_ob.content, "html.parser")
+            soup = BeautifulSoup(req_ob.content, "html.parser")
             
 
             try:        
-                abstract = gaussian.find_all("p", {"id" : "p-2"})[0]
-                abs_text = abstract.text.encode('ascii','ignore')
+                abstract = soup.find_all("p", {"id" : "p-2"})[0]
+                abs_text = trimlines(abstract.text).encode('ascii','ignore')
                 data = {'content' : str(abs_text)}
 
                 sci_graph_response = requests.get(server_url + '/annotations/entities', params = data)
@@ -138,7 +140,7 @@ class AnnotateView(APIView):
       
 
             try:        
-                hpo_obs = gaussian.find_all("a", {"class": "kwd-search"})
+                hpo_obs = soup.find_all("a", {"class": "kwd-search"})
                 hpo_terms= []
                 if hpo_obs:
                     for ob in hpo_obs:
@@ -192,11 +194,11 @@ class PhenoPacketView(APIView):
             except:
                 return Response({"response" : "Invalid URL"})
             
-            gaussian = BeautifulSoup(req_ob.content, "html.parser")
+            soup = BeautifulSoup(req_ob.content, "html.parser")
 
             try:
-                title = gaussian.find_all("title")[0]
-                title = str(title.text.decode('utf-8'))
+                title = soup.find_all("title")[0]
+                title = str(trimelines(title.text).decode('utf-8'))
 
             except:
                 title= ""
@@ -204,14 +206,14 @@ class PhenoPacketView(APIView):
 
             try: 
 
-                hpo_obs = gaussian.find_all("a", {"class": "kwd-search"})
+                hpo_obs = soup.find_all("a", {"class": "kwd-search"})
 
                 if hpo_obs:
                     hpo_terms=[]
 
                     for ob in hpo_obs:
                         hpo_terms.append(str(ob.text).strip())
-
+                    
                     phenotype_data = []
                     for term in hpo_terms:
                         data={'content' : str(term)}
@@ -228,7 +230,7 @@ class PhenoPacketView(APIView):
                                     term_id = token['id']
                                     phenotype_data.append((term_id, term))
                         else:
-                            self.app.stdout.write(str(response.status_code))
+                            pass
 
 
                     journal = Entity(
